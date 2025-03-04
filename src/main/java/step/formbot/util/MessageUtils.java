@@ -13,42 +13,49 @@ import java.io.File;
 @Slf4j
 public class MessageUtils {
 
-    public static void sendTextMessage(AbsSender sender, Long chatId, String text) {
+    public static SendMessage createTextMessage(Long chatId, String text) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId.toString());
         message.setText(text);
-        try {
-            sender.execute(message);
-            log.debug("Message successfully executed in chatId: {}, with text: {}", chatId, text);
-        } catch (TelegramApiException e) {
-            log.error("Error while sending message from bot in chatId: {}, with text: {}", chatId, text, e);
-        }
+        return message;
     }
 
-    public static void sendKeyboardMessage(AbsSender sender, Long chatId, String text, ReplyKeyboardMarkup keyboard) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId.toString());
-        message.setText(text);
+
+    public static SendMessage createKeyboardMessage(Long chatId, String text, ReplyKeyboardMarkup keyboard) {
+        SendMessage message = createTextMessage(chatId, text);
         message.setReplyMarkup(keyboard);
-        try {
-            sender.execute(message);
-            log.debug("Keyboard message successfully executed in chatId: {}, with text: {}", chatId, text);
-        } catch (TelegramApiException e) {
-            log.error("Error while sending keyboard message in chatId: {}, with text: {}", chatId, text, e);
-        }
+        return message;
     }
 
-    public static void sendDocument(AbsSender sender, Long chatId, String caption, File documentFile) {
+
+    public static SendDocument createDocumentMessage(Long chatId, String caption, File documentFile) {
         SendDocument sendDocument = new SendDocument();
         sendDocument.setChatId(chatId.toString());
         sendDocument.setCaption(caption);
         sendDocument.setDocument(new InputFile(documentFile));
-        try {
-            sender.execute(sendDocument);
-            log.debug("Document successfully sent in chatId: {} with caption: {}", chatId, caption);
-        } catch (TelegramApiException e) {
-            log.error("Error while sending document in chatId: {} with caption: {}", chatId, caption, e);
-        }
+        return sendDocument;
     }
+
+    public static SendMessage createStartMessage(Long chatId) {
+        String text = """
+                Привет! 👋 \s
+                Я — FormBot, твой помощник в составлении характеристик ребенка. \s
+                
+                📌 **Что я умею?** \s
+                🔹 Помогаю врачам разных специальностей составлять опросы. \s
+                🔹 Сохраняю ответы и формирую отчеты в .docx. \s
+                
+                🛠 **Как пользоваться?** \s
+                🔹 Нажми **/menu**, чтобы выбрать свою врачебную специальность. \s
+                🔹 Выбери доступный опрос и проходи его, отвечая на вопросы. \s
+                🔹 В конце можно просмотреть и изменить ответы перед сохранением. \s
+                
+                📄 **Финальный результат** — сформированный отчет в .docx с ответами и характеристикой. \s
+                
+                🚀 Готов начать? Жми **/menu** и вперед!
+                """;
+        return createTextMessage(chatId, text);
+    }
+
 }
 
