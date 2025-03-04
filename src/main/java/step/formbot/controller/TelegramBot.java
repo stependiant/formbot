@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import step.formbot.controller.dispatcher.UpdateDispatcher;
-import step.formbot.model.enums.UserStatus;
+import step.formbot.model.enums.UserState;
 import step.formbot.service.UserService;
 
 @Slf4j
@@ -17,7 +17,9 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final UpdateDispatcher updateDispatcher;
     private final UserService userService;
 
-    public TelegramBot(@Value("${telegram.bot.token}") String botToken, UpdateDispatcher updateDispatcher, UserService userService) {
+    public TelegramBot(@Value("${telegram.bot.token}") String botToken,
+                       UpdateDispatcher updateDispatcher,
+                       UserService userService) {
         super(botToken);
         this.updateDispatcher = updateDispatcher;
         this.userService = userService;
@@ -25,16 +27,27 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        UserStatus userStatus = userService.getUserStatusByChatId(update.getMessage().getChatId());
-        BotApiMethod<?> response = updateDispatcher.dispatch(update, userStatus);
-
+        Long chatId = getChatId(update);
+        if (chatId == null) return;
+        UserState userState = userService.getUserStatusByChatId(chatId);
+        BotApiMethod<?> response = updateDispatcher.dispatch(update, userState);
         if (response != null) {
             try {
                 execute(response);
             } catch (TelegramApiException e) {
-                log.error("Error while executing response: {}, for update: {}", response, update);
+                log.error("Error while executing response: {} for update: {}", response, update, e);
             }
         }
+    }
+
+    private static Long getChatId(Update update) {
+        Long chatId = null;
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            chatId = update.getMessage().getChatId();
+        } else if (update.hasCallbackQuery()) {
+            chatId = update.getCallbackQuery().getMessage().getChatId();
+        }
+        return chatId;
     }
 
     @Override

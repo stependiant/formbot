@@ -12,4 +12,5 @@ public class Callback {
     public final static String TOPIC_SHOW_BY_ID = "topic_show_%d";
     public final static String QUESTION_BY_QUESTION_ID_IN_TOPIC_BY_TOPIC_ID = "question_%d_in_topic_%d";
     public final static String EXPORT_SURVEY_IN_WORD = "export_survey_in_word";
+    public final static String EXPORT_SURVEY_BY_ID_IN_WORD = "export_survey_%d_in_word";
 }

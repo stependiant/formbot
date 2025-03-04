@@ -2,6 +2,7 @@ package step.formbot.util;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import step.formbot.model.Survey;
 import step.formbot.model.constants.Callback;
 
 import java.util.ArrayList;
@@ -40,9 +41,24 @@ public class InlineKeyboardFactory {
         InlineKeyboardButton btn2 = createButton("Продолжить предыдущую характеристику", Callback.SURVEY_RESUME);
         InlineKeyboardButton btn3 = createButton("Вывести характеристику в word", Callback.EXPORT_SURVEY_IN_WORD);
         InlineKeyboardButton btn4 = createButton("Передать характеристику", Callback.SURVEY_EXPORT_SHOW_ALL);
-        List<InlineKeyboardButton> row = createRow(btn1, btn2, btn3, btn4);
+        List<InlineKeyboardButton> row1 = createRow(btn1);
+        List<InlineKeyboardButton> row2 = createRow(btn2);
+        List<InlineKeyboardButton> row3 = createRow(btn3);
+        List<InlineKeyboardButton> row4 = createRow(btn4);
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-        keyboard.add(row);
+        keyboard.add(row1);
+        keyboard.add(row2);
+        keyboard.add(row3);
+        keyboard.add(row4);
+        return createKeyboard(keyboard);
+    }
+
+    public static InlineKeyboardMarkup createSurveyListKeyboard(List<Survey> surveys) {
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        for (Survey survey : surveys) {
+            InlineKeyboardButton button = createButton(survey.getName(), String.format(Callback.SURVEY_SHOW_BY_ID, survey.getId()));
+            keyboard.add(createRow(button));
+        }
         return createKeyboard(keyboard);
     }
 

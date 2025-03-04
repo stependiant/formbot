@@ -3,7 +3,7 @@ package step.formbot.model;
 import jakarta.persistence.*;
 import lombok.*;
 import step.formbot.model.enums.UserRole;
-import step.formbot.model.enums.UserStatus;
+import step.formbot.model.enums.UserState;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class User extends BaseEntity {
     private UserRole role;
 
     @Enumerated(EnumType.STRING)
-    private UserStatus status;
+    private UserState state;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Survey> surveys;

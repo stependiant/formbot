@@ -1,16 +1,18 @@
 package step.formbot.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import step.formbot.model.constants.Callback;
 
 import java.io.File;
 
 @Slf4j
+@Component
 public class MessageUtils {
 
     public static SendMessage createTextMessage(Long chatId, String text) {
@@ -18,6 +20,20 @@ public class MessageUtils {
         message.setChatId(chatId.toString());
         message.setText(text);
         return message;
+    }
+
+    public static EditMessageText editTextMessage(Long chatId, int messageId, String text) {
+        EditMessageText editMessage = new EditMessageText();
+        editMessage.setChatId(chatId.toString());
+        editMessage.setMessageId(messageId);
+        editMessage.setText(text);
+        return editMessage;
+    }
+
+    public static EditMessageText editKeyboardMessage(Long chatId, int messageId, String text, InlineKeyboardMarkup keyboard) {
+        EditMessageText editMessage = editTextMessage(chatId, messageId, text);
+        editMessage.setReplyMarkup(keyboard);
+        return editMessage;
     }
 
 
@@ -63,6 +79,11 @@ public class MessageUtils {
         String text = "Главное меню";
         InlineKeyboardMarkup keyboard = InlineKeyboardFactory.createMenuKeyboard();
         return createKeyboardMessage(chatId, text, keyboard);
+    }
+
+    public static EditMessageText editNewSurveyMessage(Long chatId, int messageId) {
+        String text = "Пожалуйста введите ФИО ребенка на которого будет собираться характеристика";
+        return editTextMessage(chatId, messageId, text);
     }
 
 }

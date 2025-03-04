@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import step.formbot.controller.dispatcher.UpdateHandler;
 import step.formbot.model.User;
-import step.formbot.model.enums.UserStatus;
+import step.formbot.model.enums.UserState;
 import step.formbot.service.UserService;
 import step.formbot.util.MessageUtils;
 
@@ -16,13 +16,12 @@ public class StartCommandHandler implements UpdateHandler {
     private final UserService userService;
 
     @Override
-    public boolean supports(Update update, UserStatus userStatus) {
-        return update.hasMessage()
-                && update.getMessage().getText().equalsIgnoreCase("/start");
+    public boolean isHandle(Update update, UserState userState) {
+        return isTextCommand(update, "/start");
     }
 
     @Override
-    public BotApiMethod<?> handle(Update update, UserStatus userStatus) {
+    public BotApiMethod<?> handle(Update update, UserState userState) {
         Long chatId = getChatId(update);
         User user = userService.getUserByChatId(chatId);
 
@@ -31,6 +30,6 @@ public class StartCommandHandler implements UpdateHandler {
             userService.updateUser(user);
             return MessageUtils.createStartMessage(chatId);
         }
-        return MessageUtils.createTextMessage(chatId, "Бот уже запущен. Выберите действие из меню.");
+        return MessageUtils.createMenuMessage(chatId);
     }
 }
