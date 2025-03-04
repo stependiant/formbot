@@ -3,7 +3,7 @@ package step.formbot.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import step.formbot.model.Survey;
-import step.formbot.repository.SurveyRepository;
+import step.formbot.repository.postgres.SurveyRepository;
 
 import java.util.List;
 
