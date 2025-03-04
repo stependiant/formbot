@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: "formbot"
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+telegram:
+  bot:
+    token: 7923666348:AAEZWy4QI5X-GWX-VB7Qx2NAyNojqCh9Ebg
