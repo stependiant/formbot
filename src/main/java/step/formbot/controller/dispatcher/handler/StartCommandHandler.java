@@ -1,6 +1,7 @@
 package step.formbot.controller.dispatcher.handler;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import step.formbot.controller.dispatcher.UpdateHandler;
@@ -9,6 +10,7 @@ import step.formbot.model.enums.UserStatus;
 import step.formbot.service.UserService;
 import step.formbot.util.MessageUtils;
 
+@Component
 @RequiredArgsConstructor
 public class StartCommandHandler implements UpdateHandler {
     private final UserService userService;
@@ -21,13 +23,14 @@ public class StartCommandHandler implements UpdateHandler {
 
     @Override
     public BotApiMethod<?> handle(Update update, UserStatus userStatus) {
-        Long chatId = update.getMessage().getChatId();
+        Long chatId = getChatId(update);
         User user = userService.getUserByChatId(chatId);
 
         if (user == null) {
-            userService.createUser(update);
+            user = userService.createUser(update);
+            userService.updateUser(user);
             return MessageUtils.createStartMessage(chatId);
         }
-        return null;
+        return MessageUtils.createTextMessage(chatId, "Бот уже запущен. Выберите действие из меню.");
     }
 }

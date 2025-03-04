@@ -15,7 +15,7 @@ public class UserService {
 
     public UserStatus getUserStatusByChatId(Long chatId) {
         return userRepository.getUserStatusByChatId(chatId)
-                .orElse(null);
+                .orElse(UserStatus.NONE);
     }
 
     public User updateUser(User user) {

@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.bots.AbsSender;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import step.formbot.model.constants.Callback;
 
 import java.io.File;
 
@@ -21,7 +21,7 @@ public class MessageUtils {
     }
 
 
-    public static SendMessage createKeyboardMessage(Long chatId, String text, ReplyKeyboardMarkup keyboard) {
+    public static SendMessage createKeyboardMessage(Long chatId, String text, InlineKeyboardMarkup keyboard) {
         SendMessage message = createTextMessage(chatId, text);
         message.setReplyMarkup(keyboard);
         return message;
@@ -54,7 +54,15 @@ public class MessageUtils {
                 
                 🚀 Готов начать? Жми **/menu** и вперед!
                 """;
-        return createTextMessage(chatId, text);
+        InlineKeyboardMarkup keyboard = InlineKeyboardFactory
+                .createStartKeyboard("/menu", Callback.COMMAND_MENU);
+        return createKeyboardMessage(chatId, text, keyboard);
+    }
+
+    public static SendMessage createMenuMessage(Long chatId) {
+        String text = "Главное меню";
+        InlineKeyboardMarkup keyboard = InlineKeyboardFactory.createMenuKeyboard();
+        return createKeyboardMessage(chatId, text, keyboard);
     }
 
 }

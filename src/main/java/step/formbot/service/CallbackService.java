@@ -45,4 +45,8 @@ public class CallbackService {
     public String getQuestionByQuestionIdInTopicByTopicId(long questionId, long topicId) {
         return String.format(Callback.QUESTION_BY_QUESTION_ID_IN_TOPIC_BY_TOPIC_ID, questionId, topicId);
     }
+
+    public String getExportSurveyInWord() {
+        return Callback.EXPORT_SURVEY_IN_WORD;
+    }
 }
