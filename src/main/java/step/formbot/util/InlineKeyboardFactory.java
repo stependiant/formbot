@@ -2,6 +2,7 @@ package step.formbot.util;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import step.formbot.model.Section;
 import step.formbot.model.Survey;
 import step.formbot.model.constants.Callback;
 
@@ -56,7 +57,21 @@ public class InlineKeyboardFactory {
     public static InlineKeyboardMarkup createSurveyListKeyboard(List<Survey> surveys) {
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         for (Survey survey : surveys) {
-            InlineKeyboardButton button = createButton(survey.getName(), String.format(Callback.SURVEY_SHOW_BY_ID, survey.getId()));
+            InlineKeyboardButton button = createButton(
+                    survey.getName(),
+                    String.format(Callback.SURVEY_SHOW_BY_ID, survey.getId()));
+            keyboard.add(createRow(button));
+        }
+        return createKeyboard(keyboard);
+    }
+
+    public static InlineKeyboardMarkup createSectionKeyboard(List<Section> sections) {
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        for (Section section : sections) {
+            InlineKeyboardButton button = createButton(
+                    section.getName(),
+                    String.format(Callback.SECTION_SHOW_BY_ID, section.getId())
+            );
             keyboard.add(createRow(button));
         }
         return createKeyboard(keyboard);

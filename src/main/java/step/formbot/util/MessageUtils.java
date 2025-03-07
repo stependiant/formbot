@@ -1,7 +1,6 @@
 package step.formbot.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -12,7 +11,6 @@ import step.formbot.model.constants.Callback;
 import java.io.File;
 
 @Slf4j
-@Component
 public class MessageUtils {
 
     public static SendMessage createTextMessage(Long chatId, String text) {
