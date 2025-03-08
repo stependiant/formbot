@@ -93,8 +93,7 @@ public class InlineKeyboardFactory {
     }
 
     public static InlineKeyboardMarkup createAnswerKeyboardWithNavigation(
-            Question question,
-            boolean hasPrev, boolean hasNext) {
+            Question question, Question prevQuestion, Question nextQuestion) {
 
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
@@ -107,12 +106,13 @@ public class InlineKeyboardFactory {
         }
 
         List<InlineKeyboardButton> navigationButtons = new ArrayList<>();
-
-        if (hasPrev) {
-            navigationButtons.add(createButton("⬅️ Предыдущий", String.format("question_%d_prev", question.getId())));
+        if (prevQuestion != null) {
+            // Передаём id предыдущего вопроса
+            navigationButtons.add(createButton("⬅️ Предыдущий", String.format("question_nav_%d", prevQuestion.getId())));
         }
-        if (hasNext) {
-            navigationButtons.add(createButton("Следующий ➡️", String.format("question_%d_next", question.getId())));
+        if (nextQuestion != null) {
+            // Передаём id следующего вопроса
+            navigationButtons.add(createButton("Следующий ➡️", String.format("question_nav_%d", nextQuestion.getId())));
         }
 
         if (!navigationButtons.isEmpty()) {

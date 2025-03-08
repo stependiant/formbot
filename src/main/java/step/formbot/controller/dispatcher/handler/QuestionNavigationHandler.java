@@ -22,7 +22,7 @@ public class QuestionNavigationHandler implements UpdateHandler {
     @Override
     public boolean isHandle(Update update, UserState userState) {
         String data = getCallbackData(update);
-        return data != null && data.matches("question_\\d+_(next|prev)");
+        return data != null && data.matches("question_nav_\\d+");
     }
 
     @Override
@@ -31,51 +31,22 @@ public class QuestionNavigationHandler implements UpdateHandler {
         int messageId = getMessageId(update);
         String callbackData = getCallbackData(update);
 
-        // Парсим ID и направление из колбэка
-        String[] parts = callbackData.split("_");
-        Long currentQuestionId = Long.parseLong(parts[1]);
-        String direction = parts[2];
-
-        // Получаем текущий вопрос
-        Question currentQuestion = questionRepository.findById(currentQuestionId).orElse(null);
-        if (currentQuestion == null) {
+        Long targetQuestionId = Long.parseLong(callbackData.replace("question_nav_", ""));
+        Question targetQuestion = questionRepository.findById(targetQuestionId).orElse(null);
+        if (targetQuestion == null) {
             return MessageUtils.createTextMessage(chatId, "Вопрос не найден.");
         }
 
-        // Находим следующий или предыдущий вопрос
-        Question targetQuestion = findAdjacentQuestion(currentQuestion, direction);
-        if (targetQuestion == null) {
-            return MessageUtils.createTextMessage(chatId, "Больше вопросов нет.");
-        }
+        List<Question> questions = questionRepository.findByTopicIdOrderById(targetQuestion.getTopic().getId());
+        int currentIndex = questions.indexOf(targetQuestion);
+        Question prevQuestion = currentIndex > 0 ? questions.get(currentIndex - 1) : null;
+        Question nextQuestion = currentIndex < questions.size() - 1 ? questions.get(currentIndex + 1) : null;
 
-        boolean hasPrev = hasAdjacentQuestion(targetQuestion, "prev");
-        boolean hasNext = hasAdjacentQuestion(targetQuestion, "next");
-
-        // Возвращаем обновлённое сообщение с вопросом и ответами
         return MessageUtils.editKeyboardMessage(
                 chatId,
                 messageId,
                 targetQuestion.getText(),
-                InlineKeyboardFactory.createAnswerKeyboardWithNavigation(targetQuestion, hasPrev, hasNext)
+                InlineKeyboardFactory.createAnswerKeyboardWithNavigation(targetQuestion, prevQuestion, nextQuestion)
         );
-    }
-
-    private Question findAdjacentQuestion(Question current, String direction) {
-        List<Question> questions = questionRepository.findByTopicIdOrderById(current.getTopic().getId());
-
-        int currentIndex = questions.indexOf(current);
-        if (direction.equals("next") && currentIndex < questions.size() - 1) {
-            return questions.get(currentIndex + 1);
-        } else if (direction.equals("prev") && currentIndex > 0) {
-            return questions.get(currentIndex - 1);
-        }
-        return null;
-    }
-
-    private boolean hasAdjacentQuestion(Question current, String direction) {
-        List<Question> questions = questionRepository.findByTopicIdOrderById(current.getTopic().getId());
-        int currentIndex = questions.indexOf(current);
-        return (direction.equals("next") && currentIndex < questions.size() - 1) ||
-                (direction.equals("prev") && currentIndex > 0);
     }
 }

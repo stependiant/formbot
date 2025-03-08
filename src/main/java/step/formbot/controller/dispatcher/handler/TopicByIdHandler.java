@@ -8,17 +8,17 @@ import step.formbot.controller.dispatcher.UpdateHandler;
 import step.formbot.model.Question;
 import step.formbot.model.Topic;
 import step.formbot.model.enums.UserState;
-import step.formbot.repository.postgres.QuestionRepository;
 import step.formbot.repository.postgres.TopicRepository;
 import step.formbot.util.InlineKeyboardFactory;
 import step.formbot.util.MessageUtils;
 
+import java.util.Comparator;
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class TopicByIdHandler implements UpdateHandler {
-
     private final TopicRepository topicRepository;
-    private final QuestionRepository questionRepository;
 
     @Override
     public boolean isHandle(Update update, UserState userState) {
@@ -39,13 +39,17 @@ public class TopicByIdHandler implements UpdateHandler {
             return MessageUtils.createTextMessage(chatId, "Вопросы не найдены.");
         }
 
-        Question question = topic.getQuestions().get(0);
+        List<Question> questions = topic.getQuestions();
+        questions.sort(Comparator.comparing(Question::getId));
+
+        Question question = questions.get(0);
+        Question nextQuestion = questions.size() > 1 ? questions.get(1) : null;
 
         return MessageUtils.editKeyboardMessage(
                 chatId,
                 messageId,
                 question.getText(),
-                InlineKeyboardFactory.createAnswerKeyboardWithNavigation(question, false, true)
+                InlineKeyboardFactory.createAnswerKeyboardWithNavigation(question, null, nextQuestion)
         );
     }
 
