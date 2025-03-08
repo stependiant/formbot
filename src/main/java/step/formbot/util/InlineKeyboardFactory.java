@@ -2,8 +2,11 @@ package step.formbot.util;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import step.formbot.model.Answer;
+import step.formbot.model.Question;
 import step.formbot.model.Section;
 import step.formbot.model.Survey;
+import step.formbot.model.Topic;
 import step.formbot.model.constants.Callback;
 
 import java.util.ArrayList;
@@ -74,6 +77,48 @@ public class InlineKeyboardFactory {
             );
             keyboard.add(createRow(button));
         }
+        return createKeyboard(keyboard);
+    }
+
+    public static InlineKeyboardMarkup createTopicKeyboard(List<Topic> topics) {
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+        for (Topic topic : topics) {
+            InlineKeyboardButton button = createButton(
+                    topic.getName(),
+                    String.format(Callback.TOPIC_SHOW_BY_ID, topic.getId())
+            );
+            keyboard.add(createRow(button));
+        }
+        return createKeyboard(keyboard);
+    }
+
+    public static InlineKeyboardMarkup createAnswerKeyboardWithNavigation(
+            Question question,
+            boolean hasPrev, boolean hasNext) {
+
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+
+        for (Answer answer : question.getAnswers()) {
+            InlineKeyboardButton button = createButton(
+                    answer.getText(),
+                    String.format("answer_%d_question_%d", answer.getId(), question.getId())
+            );
+            keyboard.add(createRow(button));
+        }
+
+        List<InlineKeyboardButton> navigationButtons = new ArrayList<>();
+
+        if (hasPrev) {
+            navigationButtons.add(createButton("⬅️ Предыдущий", String.format("question_%d_prev", question.getId())));
+        }
+        if (hasNext) {
+            navigationButtons.add(createButton("Следующий ➡️", String.format("question_%d_next", question.getId())));
+        }
+
+        if (!navigationButtons.isEmpty()) {
+            keyboard.add(navigationButtons);
+        }
+
         return createKeyboard(keyboard);
     }
 

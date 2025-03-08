@@ -15,4 +15,17 @@ public class SectionService {
     public List<Section> getAll() {
         return sectionRepository.findAll();
     }
+
+    public Section getById(Long sectionId) {
+        return sectionRepository.getSectionById(sectionId)
+                .orElse(null);
+    }
+
+    public Long extractSectionId(String callbackData) {
+        try {
+            return Long.parseLong(callbackData.replace("section_show_", ""));
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 }
